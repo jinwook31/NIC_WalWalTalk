@@ -33,15 +33,17 @@ print('Program start.. press Ctrl-C to quit...')
 def getValue(num):
     tmp = mcp.read_adc(num)
     time.sleep(0.5)
+    print(tmp)
     return tmp
 
 # play Func
 def play():
     time.sleep(0.5)
-    mixer.music.load('e:/LOCAL/')
+    mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/here.mp3')
     mixer.music.play()
     time.sleep(2)
     cur.excute(setPlay)
+    print('play voice')
 
 #check state
 def checkVal(val, state):
@@ -70,14 +72,13 @@ while True:
     rows=cur.fetchall()
     if '1' in rows:
         play()
+        print('pet is waiting')
 
-    state = checkVal(values. state)
+    state = checkVal(values, state)
 
     if state:
-        mixer.music.load('e:/LOCAL/')
+        mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/coming.mp3')
         mixer.music.play()
+        print('play voice')
 
 db.close()
-
-
-
