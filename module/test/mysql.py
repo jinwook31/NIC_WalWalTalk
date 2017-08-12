@@ -15,6 +15,7 @@ print(rows)
 
 sql1 = "UPDATE module SET sleep=1"
 cur.execute(sql1)
+db.commit()
 
 cur.execute(sql)
 rows = cur.fetchall()
