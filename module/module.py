@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import time
 
-from pygame import mixer
+from pygame import mixer, time
 
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -18,7 +18,8 @@ update_false = "UPDATE module SET wait=0"
 getData = "SELECT play FROM module"
 setPlay = "UPDATE module SET play=0"
 
-mixer.init()
+mixer.pre_init(44100,-16,2,256)
+mixer.init(frequency=16000, buffer=24000)
 
 CLK  = 18
 MISO = 23
@@ -40,7 +41,9 @@ def getValue(num):
 def play():
     time.sleep(0.5)
     mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/here.mp3')
-    mixer.music.play()
+    mixer.music.play(loops=1)
+    while mixer.music.get_busy():
+        wime.Clock().tick(100)
     time.sleep(2)
     cur.excute(setPlay)
     print('play voice')
@@ -78,7 +81,9 @@ while True:
 
     if state:
         mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/coming.mp3')
-        mixer.music.play()
+        mixer.music.play(loops=1)
+        while mixer.music.get_busy():
+            time.Clock().tick(100)
         print('play voice')
 
 db.close()
