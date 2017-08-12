@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import time
+import time as t
 
-from pygame import mixer, time
+from pygame import mixer,time
 
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
@@ -27,63 +27,69 @@ MOSI = 24
 CS   = 25
 mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
 
+port_num = 6
 state = False
 print('Program start.. press Ctrl-C to quit...')
 
 # get Value Func
 def getValue(num):
     tmp = mcp.read_adc(num)
-    time.sleep(0.5)
-    print(tmp)
+    t.sleep(0.5)
     return tmp
 
 # play Func
 def play():
-    time.sleep(0.5)
+    t.sleep(0.5)
     mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/here.mp3')
     mixer.music.play(loops=1)
     while mixer.music.get_busy():
-        wime.Clock().tick(100)
-    time.sleep(2)
+        time.Clock().tick(100)
+    t.sleep(1)
     cur.excute(setPlay)
-    print('play voice')
+    db.commit()
+    print('playing voice')
 
 #check state
-def checkVal(val, state):
-    if not state and val > 500:
-        time.sleep(1)
-        val = getValue(1)
-        if val > 500:
-            cur.excute(update_true)
+def checkVal(val, state, port):
+    if not state and val > 700:
+        t.sleep(1)
+        val = getValue(port)
+        if val > 700:
+            print(update_true)
+            cur.execute(update_true)
+            db.commit()
             return True
-
     elif state and val < 300:
-        time.sleep(1)
-        val = getValue(1)
+        t.sleep(1)
+        val = getValue(port)
         if val < 300:
-            cur.excute(update_false)
+            print(update_false)
+            cur.execute(update_false)
+            db.commit()
             return False
 
 
 # Main program loop.
 while True:
-    #read sesor value
-    values = getValue(1)
+    #read sesor value(pre_task)
+    value = getValue(port_num)
+    print(value)
+    t.sleep(1)
 
-    #check play value
+    #check mySQL play value
     cur.execute(getData)
-    rows=cur.fetchall()
+    rows = cur.fetchall()
     if '1' in rows:
         play()
         print('pet is waiting')
 
-    state = checkVal(values, state)
-
+    #check sesor value
+    state = checkVal(value, state, port_num)
     if state:
         mixer.music.load('/home/pi/Desktop/NIC_WalWalTalk/module/sound/coming.mp3')
         mixer.music.play(loops=1)
         while mixer.music.get_busy():
             time.Clock().tick(100)
-        print('play voice')
+        print('playing voice')
 
 db.close()
